@@ -27,6 +27,6 @@ jobs:
       - run: python -m unittest -v
       - name: Rebuild and verify the public example
         run: |
-          python pixel_eye.py examples/eye-16.png eye-rebuilt.svg
-          python verify_pixels.py examples/eye-16.png eye-rebuilt.svg
-          cmp examples/eye-16.svg eye-rebuilt.svg
+          python pixel_eye.py examples/sprite-24.png eye-rebuilt.svg
+          python verify_pixels.py examples/sprite-24.png eye-rebuilt.svg
+          cmp examples/sprite-24.svg eye-rebuilt.svg
