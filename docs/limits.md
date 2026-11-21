@@ -1,18 +1,18 @@
-# 출력 계약과 한계
+# Output contract and limits
 
-## 무엇을 보존하나요?
+## What is preserved?
 
-비교 대상은 **현재 Pillow가 입력을 디코딩한 뒤 얻은 RGBA 픽셀값과 좌표**입니다. 이미지의 아래쪽에 어떤 원본 스프라이트 격자가 있었는지 추정하지 않습니다. JPEG·손실 WebP의 압축 흔적도 그대로 남고, EXIF 방향 보정과 ICC 색 변환을 하지 않습니다.
+Exactness is defined by **the original grid and the RGBA values decoded by Pillow**. JPEG and lossy WebP artifacts remain. The tool does not apply EXIF orientation or ICC color transforms.
 
-- 기본 `rect`: 픽셀마다 1×1 사각형을 생성합니다.
-- `run`: 같은 행에서 RGBA가 모두 같은 이웃 픽셀만 가로로 합칩니다. 보간·축소·벡터 윤곽 추출이 아닙니다.
-- 기본 투명도 보존 모드는 투명 픽셀의 RGB도 기록합니다. `--alpha omit-transparent`를 선택하면 완전 투명 셀을 생략합니다. 이 경우 독립 검증에도 `--omit-transparent`를 지정해야 합니다.
-- 검증기 `verify_pixels.py`는 행 순서의 지정된 SVG 형식만 해석합니다. 임의 SVG, 브라우저 스크린샷, 화면 배율이나 디스플레이 색은 검증하지 않습니다. 투명 픽셀의 숨은 RGB를 렌더러가 잃을 수 있습니다.
+- In `rect` mode, every cell has a 1×1 rectangle.
+- In `run` mode, only consecutive cells with identical RGBA are merged, within one row.
+- Default mode preserves the hidden RGB values of fully transparent cells. Use `--alpha omit-transparent` to skip them, and `--omit-transparent` when verifying that output.
+- The independent checker accepts the canonical row-major SVG subset this tool emits, not arbitrary SVG. Display rendering is outside the contract; renderers may discard invisible RGB during premultiplication.
 
-## 파일과 실행 환경
+## Inputs and filesystem
 
-정지 PNG(채널당 최대 8비트) 또는 Pillow가 지원 모드로 디코딩한 정지 JPEG/WebP만 처리합니다. 입력 파일은 최대 32 MiB, 디코딩한 격자는 최대 4,194,304픽셀입니다. 기본 모드 SVG는 해상도에 따라 매우 커질 수 있으므로 미리보기용 파일과 구분하세요.
+Still PNG (at most 8 bits per channel), JPEG, and still WebP are accepted where the local Pillow build supports the codec. The limits are 32 MiB encoded and 4,194,304 decoded pixels. Large per-cell SVGs may be expensive to edit in a browser; try `run` for long flat rows.
 
-명령은 선택한 로컬 파일만 읽으며 입력과 출력은 기존 작업 루트 안의 상대 경로입니다. 출력 폴더는 먼저 만들고, 기존 SVG는 덮어쓰지 않습니다. 파일시스템은 하드 링크를 지원해야 합니다. 경로 제한은 신뢰하는 작업 폴더에서 사용하는 기능이며 다른 프로세스와 경쟁하는 보안 격리가 아닙니다.
+The CLI only opens the selected local input. Supply relative paths inside a trusted working root. The output folder must already exist, and the filesystem must support hard links. The tool never overwrites a destination. Path checks are not a security boundary against another process changing parent directories concurrently.
 
-본 모듈은 리터치, 경계 정리, 스타일 변환, 새 포즈 생성 또는 픽셀아트 복구용이 아닙니다. 이슈·예제에는 공개 권한을 가진 테스트 패턴만 사용하세요.
+This is a copier and verifier, not a retoucher, art generator, pose editor, or reconstruction tool.

@@ -1,12 +1,12 @@
 ---
-name: 픽셀 불일치
-about: 직접 만든 작은 이미지로 재현 가능한 좌표·색·알파 문제
-title: "[픽셀 불일치] "
+name: Pixel mismatch
+about: Report an exact coordinate, color, or alpha mismatch
+title: "[Pixel mismatch] "
 ---
 
-- 설치 환경: OS, Python, Pillow 버전
-- 명령과 옵션:
-- 최초 불일치 좌표 및 기대/실제 RGBA:
-- 로컬에서 직접 만든 최소 재현 이미지를 만드는 코드:
+- OS, Python and Pillow versions:
+- Command and flags:
+- First mismatching coordinate and expected/actual RGBA:
+- Code to create a minimal, self-authored input:
 
-비공개·제3자 이미지는 첨부하지 마세요. 예제는 공개 권한이 있는 경우만 첨부해 주세요.
+Do not attach private or third-party art.

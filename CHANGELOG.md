@@ -1,10 +1,12 @@
-# 변경 기록
+# Changelog
 
 ## 0.2.0
-- 공개 예제로 쓸 16×16 로고와 독립 검증 결과를 추가했습니다.
-- 정지 WebP와 1920×1080 입력을 지원 범위에 넣었습니다.
-- 기여 가이드, 차이 재현 방법, 제한 사항, GitHub 테스트 작업을 추가했습니다.
+
+- Added still WebP and full-HD input support.
+- Added the original sprite example, independent verification, contributor docs, issue templates, and CI.
+- Published English release materials under the Pixelify Anything name. The existing repository URL and Python entrypoint are unchanged.
 
 ## 0.1.0
-- PNG/JPEG의 디코딩된 RGBA를 1×1 사각형 또는 가로 런으로 저장합니다.
-- 출력 공개 직전 좌표와 RGBA를 다시 비교하고, 기존 SVG를 덮어쓰지 않습니다.
+
+- Added PNG/JPEG copy to one-cell or run-length SVG rectangles.
+- Added per-cell validation and refuse-to-overwrite output handling.
