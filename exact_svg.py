@@ -13,9 +13,9 @@ from typing import TextIO
 
 from PIL import Image, UnidentifiedImageError
 
-MAX_PIXELS = 1_048_576
+MAX_PIXELS = 4_194_304
 MAX_IMAGE_BYTES = 32 * 1024 * 1024
-FORMATS = ("PNG", "JPEG")
+FORMATS = ("PNG", "JPEG", "WEBP")
 MODES = frozenset({"1", "L", "LA", "P", "RGB", "RGBA"})
 
 
@@ -53,7 +53,7 @@ def load_rgba(path: Path, *, max_pixels: int = MAX_PIXELS):
                 raise ExportError("animated or multi-frame images are not supported")
             return image.convert("RGBA")
     except (UnidentifiedImageError, Image.DecompressionBombError, OSError, SyntaxError) as exc:
-        raise ExportError(f"could not decode supported PNG/JPEG input: {exc}") from exc
+        raise ExportError(f"could not decode supported PNG/JPEG/WebP input: {exc}") from exc
 
 
 def write_svg(image, out: TextIO, *, mode: str = "rect", alpha: str = "preserve",
@@ -133,7 +133,7 @@ def export_file(source: Path, target: Path, *, max_pixels: int = MAX_PIXELS, ver
 
 def main(argv=None, *, verifier=None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("input", help="PNG/JPEG path relative to --root")
+    p.add_argument("input", help="PNG/JPEG/WebP path relative to --root")
     p.add_argument("output", help="new .svg path relative to --root")
     p.add_argument("--root", type=Path, default=Path.cwd())
     p.add_argument("--mode", choices=("rect", "run"), default="rect")

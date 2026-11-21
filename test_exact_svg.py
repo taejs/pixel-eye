@@ -142,3 +142,33 @@ class ExactSVGTests(unittest.TestCase):
         self.assertEqual(self.cli('synth.png', 'one.svg')[0], 2)
         self.assertEqual(one.read_bytes(), b'user data')
         self.assertEqual(list(self.root.glob('.pixel-svg-*')), [])
+
+    def test_still_webp_and_reject_animation(self):
+        from PIL import features
+        if not features.check("webp"):
+            self.skipTest("Pillow build does not provide WebP")
+        self.assertIn((1920 * 1080), range(1, __import__("exact_svg").MAX_PIXELS + 1))
+        base = Image.new("RGBA", (2, 2), (15, 71, 120, 128))
+        base.save(self.root/"still.webp", lossless=True)
+        self.assertEqual(self.cli("still.webp", "still.svg")[0], 0)
+        cells, _, _ = read_rects((self.root/"still.svg").read_text(), (2, 2))
+        self.assertTrue(all(c == (15, 71, 120, 128) for c in cells.values()))
+        base.save(self.root/"animated.webp", save_all=True,
+                  append_images=[Image.new("RGBA", (2, 2), "#428722")], duration=100)
+        code, _, err = self.cli("animated.webp", "animated.svg")
+        self.assertEqual(code, 2, err)
+        self.assertIn("animated", err)
+
+    def test_full_hd_synthetic_run_round_trip(self):
+        from exact_svg import export_file
+        from verify_pixels import verify
+        src, dst = self.root/"full-hd.png", self.root/"full-hd.svg"
+        a = Image.new("RGBA", (1920, 1080), (37, 80, 202, 0))
+        a.paste((49, 119, 33, 255), (0, 0, 1920, 540))
+        a.putpixel((1919, 1079), (181, 54, 101, 127))
+        a.save(src)
+        result = export_file(src, dst, mode="run", verifier=verify)
+        self.assertEqual((result.width, result.height), (1920, 1080))
+        with dst.open("rb") as svg:
+            self.assertEqual(verify(a, svg), {"decoded_pixels":2073600,
+                "matched_rect_cells":2073600, "mismatches":0, "omitted_transparent_cells":0})
